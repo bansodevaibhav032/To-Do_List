@@ -1,15 +1,19 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login as loginUser
+from django.contrib.auth import authenticate, login as loginUser, logout as logoutUser
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from app.forms import TODOForm
 from app.models import TODO
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required(login_url="login")
 def home(request):
-    form = TODOForm()
-    todos = TODO.objects.all() 
-    return render(request, 'index.html',context={'form':form, 'todos':todos})
+    if request.user.is_authenticated:
+        user=request.user
+        form = TODOForm()
+        todos = TODO.objects.filter(user=user).order_by('priority')
+        return render(request, 'index.html',context={'form':form, 'todos':todos})
 
 def login(request):
     if request.method == 'GET':
@@ -57,8 +61,23 @@ def signup(request):
             return render(request, 'signup.html',context=context)
         
 def logout(request):
-    pass
+    logoutUser(request)
+    return redirect("login")
 
+def delete_todo(request,id):
+    print(id)
+    TODO.objects.get(pk=id).delete()
+    return redirect("home")
+
+
+def change_todo(request,id,status):
+    print(id)
+    todo=TODO.objects.get(pk=id)
+    todo.status=status
+    todo.save()
+    return redirect("home")
+
+@login_required(login_url="login")
 def add_todo(request):
     if request.user.is_authenticated:
         user=request.user

@@ -17,33 +17,63 @@
                       </form>
                     </div>
                   </div>
+
+                  
+
                   <div class="col">
                     <div class="border">
-                        <div>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Id</th>
-                                        <th>Title</th>
-                                        <th>status</th>
-                                        <th>Priority</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    
-                                    {% for todo in todos %}
-                                    <tr>                          
-                                        <td>{{forloop.counter}}</td>
-                                        <td>{{todo.title}}</td>
-                                        <td>{{todo.status}}</td>
-                                        <td>{{todo.priority}}</td>
-                                    </tr>
-                                    {%endfor%}
-                                     
-                                </tbody>
-                            </table>
+                        {% if todos|length == 0 %}
+                        <div class="p-4">
+                          <br>
+                          <br>
+                          <div class="alert alert-info text-center">
+                            <p class="" style="font-size: 30px;">No Todos</p>
+                          </div>
+                          <br>
+                          <br>
                         </div>
+                    
+                        {% else %}
+                        <div>
+                          <table class="table">
+                              <thead>
+                                  <tr>
+                                      <th>Id</th>
+                                      <th>Title</th>
+                                      <th>Status</th>
+                                      <th>Priority</th>
+                                      <th>Action</th>
+                                  </tr>
+                              </thead>
+
+                              <tbody>                                  
+                                  {% for todo in todos %}
+                                  <tr>                          
+                                      <td>{{forloop.counter}}</td>
+                                      <td>{{todo.title}}</td>
+                                      <td>
+                                        {% if todo.status == 'C'%}
+                                        ✅
+                                        {%else%}
+                                        🕛
+                                        {%endif%}
+                                      </td>                            
+                                      <td>{{todo.priority}}</td>
+                                      <td> 
+                                        <a href="/delete-todo/{{todo.id}}" class="" title="Delete">🗑️</a>
+                                        {% if todo.status == 'P'%}
+                                        <a href="/change-status/{{todo.id}}/C" class="" title="Mark Completed">✅</a>
+                                        {%else%}
+                                        <a href="/change-status/{{todo.id}}/P" class="" title="Mark Pending">🕛</a>
+                                        {%endif%}
+                                      </td>
+                                  </tr>
+                                  {%endfor%}                                   
+                              </tbody>
+                          </table>
+                      </div>
+
+                        {% endif %}
                     </div>
                   </div>
             </div>
